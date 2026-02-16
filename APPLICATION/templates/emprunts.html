@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Emprunts{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="bi bi-arrow-left-right"></i> Gestion des Emprunts
+        </h1>
+        <div>
+            <a href="{{ url_for('nouvel_emprunt') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouvel emprunt
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="statut" class="form-label">Statut</label>
+                    <select class="form-select" id="statut" name="statut" onchange="this.form.submit()">
+                        <option value="tous" {% if request.args.get('statut', 'tous') == 'tous' %}selected{% endif %}>Tous</option>
+                        <option value="en_cours" {% if request.args.get('statut') == 'en_cours' %}selected{% endif %}>En cours</option>
+                        <option value="retourne" {% if request.args.get('statut') == 'retourne' %}selected{% endif %}>Retournés</option>
+                        <option value="en_retard" {% if request.args.get('statut') == 'en_retard' %}selected{% endif %}>En retard</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="search" class="form-label">Rechercher</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           placeholder="Titre, usager, ISBN..." 
+                           value="{{ request.args.get('search', '') }}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des emprunts -->
+    <div class="card shadow">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="bi bi-list-ul"></i> Liste des emprunts
+                <span class="badge bg-primary ms-2">{{ emprunts|length }}</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Usager</th>
+                            <th>Ouvrage</th>
+                            <th>Date emprunt</th>
+                            <th>Retour prévu</th>
+                            <th>Statut</th>
+                            <th>Prolong.</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emprunt in emprunts %}
+                        <tr>
+                            <td><span class="badge bg-secondary">#{{ emprunt.id }}</span></td>
+                            <td>
+                                <strong>{{ emprunt.usager.prenom }} {{ emprunt.usager.nom }}</strong><br>
+                                <small class="text-muted">{{ emprunt.usager.email }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ emprunt.exemplaire.ouvrage.titre }}</strong><br>
+                                <small class="text-muted">{{ emprunt.exemplaire.ouvrage.auteur }}</small>
+                                <br><small class="text-muted">Ex: #{{ emprunt.exemplaire.numero }}</small>
+                            </td>
+                            <td>{{ emprunt.date_emprunt.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {{ emprunt.date_retour_prevue.strftime('%d/%m/%Y') }}
+                                {% if emprunt.date_retour_reelle %}
+                                <br><small class="text-success">Retourné: {{ emprunt.date_retour_reelle.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if emprunt.statut == 'retourné' %}
+                                    <span class="badge bg-success">Retourné</span>
+                                {% elif emprunt.est_en_retard() %}
+                                    <span class="badge bg-danger">En retard</span>
+                                {% else %}
+                                    <span class="badge bg-primary">En cours</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if emprunt.prolongations > 0 %}
+                                    <span class="badge bg-info">{{ emprunt.prolongations }}/2</span>
+                                {% else %}
+                                    <span class="text-muted">0</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    {% if emprunt.statut == 'en_cours' %}
+                                        <a href="{{ url_for('retourner_emprunt', id=emprunt.id) }}" 
+                                           class="btn btn-sm btn-success" 
+                                           title="Retour"
+                                           onclick="return confirm('Confirmer le retour de cet emprunt ?')">
+                                            <i class="bi bi-arrow-return-left"></i>
+                                        </a>
+                                        <a href="{{ url_for('prolonger_emprunt', id=emprunt.id) }}" 
+                                           class="btn btn-sm btn-warning {% if emprunt.prolongations >= 2 %}disabled{% endif %}"
+                                           title="Prolonger (7 jours)"
+                                           onclick="return confirm('Prolonger cet emprunt de 7 jours ?')">
+                                            <i class="bi bi-calendar-plus"></i>
+                                        </a>
+                                    {% endif %}
+                                    <a href="#" class="btn btn-sm btn-info" title="Détails">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-3 mb-3">Aucun emprunt trouvé</p>
+                                <a href="{{ url_for('nouvel_emprunt') }}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Créer un emprunt
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

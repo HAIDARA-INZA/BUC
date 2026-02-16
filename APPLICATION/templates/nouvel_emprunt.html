@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvel emprunt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- En-tête -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="bi bi-cart-plus"></i> Nouvel emprunt
+                </h1>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+                </a>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Enregistrer un emprunt</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="form-emprunt">
+                        <!-- Sélection de l'usager -->
+                        <div class="mb-4">
+                            <label for="usager_id" class="form-label fw-bold">
+                                <i class="bi bi-person"></i> Usager
+                            </label>
+                            <select class="form-select form-select-lg" id="usager_id" name="usager_id" required>
+                                <option value="" selected disabled>-- Sélectionnez un usager --</option>
+                                {% for usager in usagers %}
+                                <option value="{{ usager.id }}">
+                                    {{ usager.prenom }} {{ usager.nom }} - {{ usager.email }}
+                                </option>
+                                {% else %}
+                                <option value="" disabled>Aucun usager disponible</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Seuls les usagers avec le statut "actif" sont affichés.
+                            </div>
+                        </div>
+
+                        <!-- Sélection de l'ouvrage -->
+                        <div class="mb-4">
+                            <label for="ouvrage_id" class="form-label fw-bold">
+                                <i class="bi bi-book"></i> Ouvrage
+                            </label>
+                            <select class="form-select form-select-lg" id="ouvrage_id" name="ouvrage_id" required>
+                                <option value="" selected disabled>-- Sélectionnez un ouvrage --</option>
+                                {% for ouvrage in ouvrages %}
+                                <option value="{{ ouvrage.id }}" 
+                                        data-disponibles="{{ ouvrage.exemplaires_disponibles() }}">
+                                    {{ ouvrage.titre }} - {{ ouvrage.auteur }}
+                                    ({{ ouvrage.exemplaires_disponibles() }} disponible(s))
+                                </option>
+                                {% else %}
+                                <option value="" disabled>Aucun ouvrage disponible</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text" id="disponibilite-info">
+                                <i class="bi bi-info-circle"></i> 
+                                <span id="disponibilite-texte">Sélectionnez un ouvrage pour voir sa disponibilité</span>
+                            </div>
+                        </div>
+
+                        <!-- Date de retour prévue (optionnelle) -->
+                        <div class="mb-4">
+                            <label for="date_retour" class="form-label fw-bold">
+                                <i class="bi bi-calendar"></i> Date de retour prévue
+                            </label>
+                            <input type="date" class="form-control" id="date_retour" name="date_retour"
+                                   value="{{ now.date().isoformat() if now else '' }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Par défaut : 21 jours après aujourd'hui
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-x-circle"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success" id="btn-submit">
+                                <i class="bi bi-check-circle"></i> Confirmer l'emprunt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Aide -->
+            <div class="card shadow mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="bi bi-question-circle"></i> Règles d'emprunt</h6>
+                    <ul class="small mb-0">
+                        <li>Un usager ne peut pas emprunter plus de 5 ouvrages simultanément</li>
+                        <li>La durée standard d'un emprunt est de 21 jours</li>
+                        <li>Les retards entraînent la suspension temporaire du droit d'emprunt</li>
+                        <li>Un ouvrage réservé est prioritaire pour l'usager en file d'attente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ouvrageSelect = document.getElementById('ouvrage_id');
+    const disponibiliteTexte = document.getElementById('disponibilite-texte');
+    
+    // Afficher la disponibilité quand on sélectionne un ouvrage
+    if (ouvrageSelect) {
+        ouvrageSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const disponibles = selectedOption.dataset.disponibles;
+            
+            if (disponibles > 0) {
+                disponibiliteTexte.innerHTML = `<span class="text-success">
+                    <i class="bi bi-check-circle"></i> ${disponibles} exemplaire(s) disponible(s)
+                </span>`;
+            } else {
+                disponibiliteTexte.innerHTML = `<span class="text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Aucun exemplaire disponible
+                </span>`;
+            }
+        });
+    }
+    
+    // Validation du formulaire
+    const form = document.getElementById('form-emprunt');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const usager = document.getElementById('usager_id');
+            const ouvrage = document.getElementById('ouvrage_id');
+            
+            if (!usager.value || !ouvrage.value) {
+                e.preventDefault();
+                alert('Veuillez sélectionner un usager et un ouvrage');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

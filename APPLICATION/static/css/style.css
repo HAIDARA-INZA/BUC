@@ -1,0 +1,49 @@
+/* Styles personnalisés pour l'application */
+
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.alert {
+    border: none;
+}
+
+.btn {
+    border-radius: 4px;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Animation pour les nouvelles entrées */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvelle réservation{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Créer une nouvelle réservation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="usager_id" class="form-label">Usager</label>
+                            <select class="form-select" id="usager_id" name="usager_id" required>
+                                <option value="" selected disabled>-- Sélectionnez un usager --</option>
+                                {% for usager in usagers %}
+                                <option value="{{ usager.id }}">{{ usager.prenom }} {{ usager.nom }} - {{ usager.email }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ouvrage_id" class="form-label">Ouvrage</label>
+                            <select class="form-select" id="ouvrage_id" name="ouvrage_id" required>
+                                <option value="" selected disabled>-- Sélectionnez un ouvrage --</option>
+                                {% for ouvrage in ouvrages %}
+                                <option value="{{ ouvrage.id }}">{{ ouvrage.titre }} - {{ ouvrage.auteur }} ({{ ouvrage.exemplaires_disponibles() }} dispo)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('liste_reservations') }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Créer la réservation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

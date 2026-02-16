@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Bienvenue à la Bibliothèque</h1>
+            <p class="lead mb-4">Système de gestion de bibliothèque moderne et efficace</p>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Accès public</h5>
+                    <p class="card-text">Consultez notre catalogue de livres</p>
+                    <div class="mt-3">
+                        <a href="{{ url_for('catalogue') }}" class="btn btn-primary mb-2">
+                            Voir le catalogue complet
+                        </a>
+                        <form action="{{ url_for('catalogue') }}" method="GET" class="d-inline">
+                            <input type="text" name="search" class="form-control mb-2" placeholder="Rechercher un livre...">
+                            <button type="submit" class="btn btn-outline-primary">
+                                Rechercher
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Pour les usagers</h5>
+                            <ul class="list-unstyled">
+                                <li>✓ Consultation du catalogue</li>
+                                <li>✓ Réservation en ligne</li>
+                                <li>✓ Suivi de vos emprunts</li>
+                                <li>✓ Prolongation d'emprunts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Pour les bibliothécaires</h5>
+                            <ul class="list-unstyled">
+                                <li>✓ Gestion complète des ouvrages</li>
+                                <li>✓ Gestion des usagers</li>
+                                <li>✓ Suivi des emprunts/retours</li>
+                                <li>✓ Tableau de bord statistique</li>
+                            </ul>
+                            <a href="{{ url_for('login') }}" class="btn btn-success mt-3">
+                                Accéder à l'espace administrateur
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

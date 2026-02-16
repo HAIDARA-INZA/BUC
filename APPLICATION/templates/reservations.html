@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Réservations{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="bi bi-clock-history"></i> Gestion des Réservations
+        </h1>
+        <div>
+            <a href="{{ url_for('nouvelle_reservation') }}" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle"></i> Nouvelle réservation
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques des réservations -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Réservations actives</h6>
+                            <h2 class="mt-2 mb-0">{{ reservations|selectattr('statut', 'equalto', 'active')|list|length }}</h2>
+                        </div>
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Honorées</h6>
+                            <h2 class="mt-2 mb-0">{{ reservations|selectattr('statut', 'equalto', 'honorée')|list|length }}</h2>
+                        </div>
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Expirées/Annulées</h6>
+                            <h2 class="mt-2 mb-0">{{ reservations|selectattr('statut', 'equalto', 'expirée')|list|length + reservations|selectattr('statut', 'equalto', 'annulée')|list|length }}</h2>
+                        </div>
+                        <i class="bi bi-x-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Statut</label>
+                    <select class="form-select" name="statut" onchange="this.form.submit()">
+                        <option value="active" {% if request.args.get('statut', 'active') == 'active' %}selected{% endif %}>Actives</option>
+                        <option value="toutes" {% if request.args.get('statut') == 'toutes' %}selected{% endif %}>Toutes</option>
+                        <option value="honorée" {% if request.args.get('statut') == 'honorée' %}selected{% endif %}>Honorées</option>
+                        <option value="annulée" {% if request.args.get('statut') == 'annulée' %}selected{% endif %}>Annulées</option>
+                    </select>
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label">Rechercher</label>
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Titre, usager..." 
+                           value="{{ request.args.get('search', '') }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des réservations -->
+    <div class="card shadow">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="bi bi-list-ul"></i> Liste des réservations
+                <span class="badge bg-primary ms-2">{{ reservations|length }}</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Usager</th>
+                            <th>Ouvrage</th>
+                            <th>Date réservation</th>
+                            <th>Expiration</th>
+                            <th>Priorité</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td><span class="badge bg-secondary">#{{ reservation.id }}</span></td>
+                            <td>
+                                <strong>{{ reservation.usager.prenom }} {{ reservation.usager.nom }}</strong><br>
+                                <small class="text-muted">{{ reservation.usager.email }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ reservation.ouvrage.titre }}</strong><br>
+                                <small class="text-muted">{{ reservation.ouvrage.auteur }}</small>
+                            </td>
+                            <td>{{ reservation.date_reservation.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                {{ reservation.date_expiration.strftime('%d/%m/%Y') }}
+                                {% if reservation.statut == 'active' and reservation.date_expiration < now %}
+                                    <span class="badge bg-danger">Expirée</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info">#{{ reservation.priorite }}</span>
+                            </td>
+                            <td>
+                                {% if reservation.statut == 'active' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif reservation.statut == 'honorée' %}
+                                    <span class="badge bg-primary">Honorée</span>
+                                {% elif reservation.statut == 'annulée' %}
+                                    <span class="badge bg-danger">Annulée</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ reservation.statut }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    {% if reservation.statut == 'active' %}
+                                        <a href="{{ url_for('honorer_reservation', id=reservation.id) }}" class="btn btn-sm btn-success" 
+                                           onclick="return confirm('Marquer cette réservation comme honorée ?')"
+                                           title="Marquer comme honorée">
+                                            <i class="bi bi-check-circle"></i>
+                                        </a>
+                                        <a href="{{ url_for('annuler_reservation', id=reservation.id) }}" class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Annuler cette réservation ?')"
+                                           title="Annuler">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                    {% endif %}
+                                    <a href="{{ url_for('detail_ouvrage', id=reservation.ouvrage.id) }}" class="btn btn-sm btn-info" title="Détails ouvrage">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-3 mb-0">Aucune réservation trouvée</p>
+                                <small class="text-muted">Les réservations apparaîtront ici lorsque des usagers réserveront des ouvrages.</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

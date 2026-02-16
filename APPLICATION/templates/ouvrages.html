@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogue des livres{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="bi bi-search"></i> Catalogue des livres</h1>
+            <p class="lead">Recherchez et découvrez notre collection</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à l'accueil
+            </a>
+        </div>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('liste_ouvrages') }}">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" 
+                           name="search" placeholder="Titre, auteur, catégorie..." 
+                           value="{{ request.args.get('search', '') }}">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="bi bi-search"></i> Rechercher
+                    </button>
+                </div>
+                {% if request.args.get('search') %}
+                <div class="mt-2">
+                    <small class="text-muted">
+                        Résultats pour : <strong>{{ request.args.get('search') }}</strong>
+                        <a href="{{ url_for('liste_ouvrages') }}" class="ms-2">
+                            <i class="bi bi-x-circle"></i> Effacer
+                        </a>
+                    </small>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Résultats -->
+    {% if ouvrages %}
+    <div class="row">
+        {% for ouvrage in ouvrages %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ouvrage.titre }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ ouvrage.auteur }}</h6>
+                    
+                    <div class="mt-3">
+                        {% if ouvrage.categorie %}
+                        <span class="badge bg-info mb-2">{{ ouvrage.categorie }}</span>
+                        {% endif %}
+                        
+                        {% if ouvrage.annee_publication %}
+                        <p class="mb-1"><small>Année : {{ ouvrage.annee_publication }}</small></p>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-{{ 'success' if ouvrage.est_disponible() else 'danger' }}">
+                                    {{ ouvrage.exemplaires_disponibles() }} disponible(s)
+                                </span>
+                            </div>
+                            <button onclick="verifierDisponibilite({{ ouvrage.id }})" 
+                                    class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-info-circle"></i> Détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        Code : {{ ouvrage.isbn or ouvrage.id }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Nombre de résultats -->
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle"></i> 
+        {{ ouvrages|length }} livre{% if ouvrages|length > 1 %}s{% endif %} trouvé{% if ouvrages|length > 1 %}s{% endif %}
+    </div>
+    
+    {% else %}
+    <!-- Aucun résultat -->
+    <div class="text-center py-5">
+        <i class="bi bi-book text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 text-muted">Aucun livre trouvé</h4>
+        {% if request.args.get('search') %}
+        <p class="text-muted">Aucun résultat pour "{{ request.args.get('search') }}"</p>
+        <a href="{{ url_for('liste_ouvrages') }}" class="btn btn-primary mt-2">
+            Voir tous les livres
+        </a>
+        {% else %}
+        <p class="text-muted">Le catalogue est vide pour le moment</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function verifierDisponibilite(ouvrageId) {
+    fetch(`/api/ouvrage/${ouvrageId}/disponibilite`)
+        .then(response => response.json())
+        .then(data => {
+            let message = `Disponibilité : ${data.exemplaires_disponibles}/${data.total_exemplaires} exemplaires`;
+            if (data.disponible) {
+                alert('✅ ' + message + '\n\nCe livre est disponible à l\'emprunt.');
+            } else {
+                alert('❌ ' + message + '\n\nCe livre n\'est pas disponible actuellement.');
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de la vérification de disponibilité');
+        });
+}
+</script>
+{% endblock %}

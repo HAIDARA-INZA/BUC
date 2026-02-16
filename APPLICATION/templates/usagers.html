@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Usagers{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="bi bi-people-fill"></i> Gestion des Usagers
+        </h1>
+        <div>
+            <a href="{{ url_for('ajouter_usager') }}" class="btn btn-success">
+                <i class="bi bi-person-plus"></i> Nouvel usager
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Rechercher par nom, prénom ou email..." 
+                               value="{{ request.args.get('search', '') }}">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Rechercher
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('liste_usagers') }}" class="btn btn-secondary w-100">
+                        Effacer
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des usagers -->
+    <div class="card shadow">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="bi bi-list-ul"></i> Liste des usagers
+                <span class="badge bg-primary ms-2">{{ usagers|length }}</span>
+            </h6>
+            <div>
+                <span class="badge bg-success me-1">Actifs: {{ usagers|selectattr('statut', 'equalto', 'actif')|list|length }}</span>
+                <span class="badge bg-danger">Suspendus: {{ usagers|selectattr('statut', 'equalto', 'suspendu')|list|length }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom complet</th>
+                            <th>Email / Téléphone</th>
+                            <th>Adresse</th>
+                            <th>Inscription</th>
+                            <th>Statut</th>
+                            <th>Emprunts</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usager in usagers %}
+                        <tr>
+                            <td><span class="badge bg-secondary">#{{ usager.id }}</span></td>
+                            <td>
+                                <strong>{{ usager.prenom }} {{ usager.nom }}</strong>
+                            </td>
+                            <td>
+                                <i class="bi bi-envelope"></i> {{ usager.email }}<br>
+                                <small><i class="bi bi-telephone"></i> {{ usager.telephone or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <small>{{ usager.adresse or 'Non renseignée' }}</small>
+                            </td>
+                            <td>{{ usager.date_inscription.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {% if usager.statut == 'actif' %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Suspendu</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% set emprunts_actifs = usager.emprunts|selectattr('statut', 'equalto', 'en_cours')|list|length %}
+                                {% if emprunts_actifs > 0 %}
+                                    <span class="badge bg-info">{{ emprunts_actifs }}</span>
+                                {% else %}
+                                    <span class="text-muted">0</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('modifier_usager', id=usager.id) }}" class="btn btn-sm btn-primary" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% if usager.statut == 'actif' %}
+                                    <form method="POST" action="{{ url_for('modifier_usager', id=usager.id) }}" style="display: inline;">
+                                        <input type="hidden" name="nom" value="{{ usager.nom }}">
+                                        <input type="hidden" name="prenom" value="{{ usager.prenom }}">
+                                        <input type="hidden" name="telephone" value="{{ usager.telephone or '' }}">
+                                        <input type="hidden" name="adresse" value="{{ usager.adresse or '' }}">
+                                        <input type="hidden" name="statut" value="suspendu">
+                                        <button type="submit" class="btn btn-sm btn-warning" title="Suspendre" onclick="return confirm('Suspendre cet usager ?')">
+                                            <i class="bi bi-person-x"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="POST" action="{{ url_for('modifier_usager', id=usager.id) }}" style="display: inline;">
+                                        <input type="hidden" name="nom" value="{{ usager.nom }}">
+                                        <input type="hidden" name="prenom" value="{{ usager.prenom }}">
+                                        <input type="hidden" name="telephone" value="{{ usager.telephone or '' }}">
+                                        <input type="hidden" name="adresse" value="{{ usager.adresse or '' }}">
+                                        <input type="hidden" name="statut" value="actif">
+                                        <button type="submit" class="btn btn-sm btn-success" title="Activer" onclick="return confirm('Activer cet usager ?')">
+                                            <i class="bi bi-person-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('supprimer_usager', id=usager.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet usager ?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-3 mb-3">Aucun usager trouvé</p>
+                                <a href="{{ url_for('ajouter_usager') }}" class="btn btn-primary">
+                                    <i class="bi bi-person-plus"></i> Ajouter un usager
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

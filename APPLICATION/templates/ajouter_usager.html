@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Usager{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="bi bi-person-plus"></i> Ajouter un nouvel usager</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" novalidate>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="prenom" name="prenom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nom" name="nom" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="ex: 0123456789">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="adresse" class="form-label">Adresse</label>
+                            <textarea class="form-control" id="adresse" name="adresse" rows="3" placeholder="ex: 12 rue de Paris, 75001 Paris"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Ajouter l'usager
+                            </button>
+                            <a href="{{ url_for('liste_usagers') }}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

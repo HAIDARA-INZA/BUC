@@ -1,0 +1,49 @@
+Détails des associations :
+
+NB: 
+1 = un et un seul
+0...1 = zéro ou un
+* = plusieurs
+0...* = zéro ou plusieurs
+1...* = un ou plusieurs
+Bibliothécaire - Ouvrage (1..* - 1)
+
+Un bibliothécaire peut gérer plusieurs ouvrages
+
+Un ouvrage est géré par un bibliothécaire
+
+Bibliothécaire - Usager (1..* - 1)
+
+Un bibliothécaire peut gérer plusieurs usagers
+
+Un usager est géré par un bibliothécaire
+
+Usager - Emprunt (1 - 0..*)
+
+Un usager peut effectuer plusieurs emprunts
+
+Un emprunt est effectué par un seul usager
+
+Usager - Réservation (1 - 0..*)
+
+Un usager peut créer plusieurs réservations
+
+Une réservation est créée par un seul usager
+
+Ouvrage - Exemplaire (1 - 1..*)
+
+Composition : un ouvrage contient plusieurs exemplaires
+
+Un exemplaire appartient à un seul ouvrage
+
+Ouvrage - Réservation (1 - 0..*)
+
+Un ouvrage peut avoir plusieurs réservations
+
+Une réservation concerne un seul ouvrage
+
+Exemplaire - Emprunt (1 - 0..*)
+
+Un exemplaire peut faire l'objet de plusieurs emprunts (dans le temps)
+
+Un emprunt concerne un seul exemplaire

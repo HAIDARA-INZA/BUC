@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Réserver - {{ ouvrage.titre }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Réserver "{{ ouvrage.titre }}"</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="usager_id" class="form-label">Sélectionnez un usager</label>
+                            <select name="usager_id" id="usager_id" class="form-select" required>
+                                <option value="" selected disabled>-- Choisir un usager --</option>
+                                {% for usager in usagers %}
+                                <option value="{{ usager.id }}">{{ usager.prenom }} {{ usager.nom }} - {{ usager.email }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('detail_ouvrage', id=ouvrage.id) }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Créer la réservation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

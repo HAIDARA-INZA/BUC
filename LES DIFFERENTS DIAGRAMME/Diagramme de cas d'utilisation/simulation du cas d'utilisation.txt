@@ -1,0 +1,44 @@
+Exemple De Scénarios Détaillés
+
+Scénario 1 : Consultation du catalogue
+
+Acteur principal : Usager
+Objectif : Trouver des ouvrages intéressants
+Pré-condition : Aucune (accès public)
+Scénario nominal :
+1. L'usager accède à l'interface de recherche
+2. Il saisit des critères (titre, auteur, sujet)
+3. Le système affiche la liste des ouvrages correspondants
+4. Pour chaque ouvrage, le système indique :
+   - Titre, auteur, éditeur
+   - Nombre d'exemplaires disponibles
+   - Position dans les rayons
+   - Résumé
+5. L'usager peut afficher les détails d'un ouvrage
+Post-condition : L'usager a une liste d'ouvrages
+Extensions :
+- Aucun résultat trouvé
+- Plusieurs pages de résultats
+
+Scénario 2 : Réservation d'un ouvrage
+
+
+Acteur principal : Usager
+Acteur secondaire : Système de Notification
+Objectif : Mettre en attente un ouvrage non disponible
+Pré-condition :
+- Usager identifié et actif
+- Ouvrage existe mais non disponible
+- Pas de réservation active pour cet ouvrage par le même usager
+Scénario nominal :
+1. L'usager consulte le catalogue
+2. Il trouve un ouvrage non disponible (0 exemplaire libre)
+3. Il clique sur "Réserver"
+4. Le système vérifie que l'usager peut réserver
+5. Le système calcule sa position dans la file d'attente
+6. Le système crée la réservation
+7. Le système confirme avec numéro et position
+
+Scénario alternatif (ouvrage disponible) :
+Le système propose directement l'emprunt
+Post-condition : Réservation créée, usager en attente

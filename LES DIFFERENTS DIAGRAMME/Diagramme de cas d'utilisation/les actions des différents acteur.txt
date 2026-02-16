@@ -1,0 +1,48 @@
+┌─────────────────────────────────────────────────────────────┐
+│               Système de Gestion de Bibliothèque            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Acteur : Bibliothécaire                                    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ Gérer les ouvrages ◄──────────────────────────────┐ │    │
+│  │   ├── Ajouter un ouvrage                          │ │    │
+│  │   ├── Modifier un ouvrage                         │ │    │
+│  │   ├── Supprimer un ouvrage                        │ │    │
+│  │   └── Consulter le catalogue                      │ │    │
+│  │                                                   │ │    │
+│  │ Gérer les usagers ◄─────────────────────────────┐ │ │    │
+│  │   ├── Inscrire un usager                        │ │ │    │
+│  │   ├── Modifier un usager                        │ │ │    │
+│  │   ├── Désactiver un usager                      │ │ │    │
+│  │   └── Consulter la liste des usagers            │ │ │    │
+│  │                                                   │ │    │   
+│  │ Gérer les emprunts ◄────────────────────────────┐ │ │    │   
+│  │   ├── Enregistrer un emprunt                    │ │ │    │   
+│  │   ├── Enregistrer un retour                     │ │ │    │   
+│  │   ├── Prolonger un emprunt                      │ │ │    │   
+│  │   └── Consulter les emprunts                    │ │ │    │   
+│  │                                                   │ │    │ 
+│  │ Gérer les réservations                            │ │    │ 
+│  │                                                   │ │    │ 
+│  │ Consulter les statistiques                        │ │    │ 
+│  └─────────────────────────────────────────────────────┘    │ 
+│                                                             │  
+│  Acteur : Usager                                            │ 
+│  ┌─────────────────────────────────────────────────────┐    │ 
+│  │ Consulter le catalogue ◄────────────────────────────┼─── ┘ 
+│  │                                                     │    │
+│  │ Réserver un ouvrage ◄────────────────────────────── ┼─── │
+│  │                                                     │    │     
+│  │ Consulter ses emprunts                              │    │   
+│  │                                                     │    │   
+│  │ Prolonger un emprunt ◄───────────────────────────── ┼────│
+│  └─────────────────────────────────────────────────────┘    │
+│                                                             │
+│  Acteur : Système de notification                           │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ Envoyer notification de retard                      │    │
+│  │                                                     │    │
+│  │ Envoyer notification de disponibilité               │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘

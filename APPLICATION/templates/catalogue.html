@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogue - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0">
+                <i class="bi bi-book"></i> Catalogue de la Bibliothèque
+            </h1>
+            <small class="text-muted">Découvrez notre collection de {{ ouvrages|length }} ouvrage(s)</small>
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('ajouter_ouvrage') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Ajouter un ouvrage
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recherche -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Rechercher par titre ou auteur..." 
+                               value="{{ request.args.get('search', '') }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des ouvrages -->
+    {% if ouvrages %}
+    <div class="row g-4">
+        {% for ouvrage in ouvrages %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ouvrage.titre }}</h5>
+                    <p class="card-text text-muted">
+                        <strong>Auteur:</strong> {{ ouvrage.auteur }}<br>
+                        <strong>ISBN:</strong> {{ ouvrage.isbn or 'N/A' }}<br>
+                        <strong>Année:</strong> {{ ouvrage.annee_publication or 'N/A' }}<br>
+                        <strong>Catégorie:</strong> {{ ouvrage.categorie or 'N/A' }}
+                    </p>
+                    <p class="card-text small">{{ ouvrage.description or 'Pas de description' }}</p>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if ouvrage.est_disponible() %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Disponible ({{ ouvrage.exemplaires_disponibles() }}/{{ ouvrage.nombre_exemplaires }})
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Indisponible
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if current_user.is_authenticated %}
+                    <div class="mt-2">
+                        <a href="{{ url_for('detail_ouvrage', id=ouvrage.id) }}" class="btn btn-sm btn-outline-primary">
+                            Détails (Admin)
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="mt-2">
+                        <a href="{{ url_for('detail_ouvrage_public', id=ouvrage.id) }}" class="btn btn-sm btn-primary">
+                            Voir détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle"></i> Aucun ouvrage trouvé
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Ouvrage{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-book-plus"></i> Ajouter un nouvel ouvrage
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="form-ouvrage">
+                        <div class="row">
+                            <!-- Titre -->
+                            <div class="col-md-12 mb-3">
+                                <label for="titre" class="form-label">Titre *</label>
+                                <input type="text" class="form-control" id="titre" name="titre" 
+                                       placeholder="Titre du livre" required>
+                            </div>
+                            
+                            <!-- Auteur -->
+                            <div class="col-md-12 mb-3">
+                                <label for="auteur" class="form-label">Auteur(s) *</label>
+                                <input type="text" class="form-control" id="auteur" name="auteur" 
+                                       placeholder="Nom de l'auteur" required>
+                            </div>
+                            
+                            <!-- ISBN -->
+                            <div class="col-md-6 mb-3">
+                                <label for="isbn" class="form-label">ISBN</label>
+                                <input type="text" class="form-control" id="isbn" name="isbn" 
+                                       placeholder="ISBN (13 chiffres)">
+                            </div>
+                            
+                            <!-- Année -->
+                            <div class="col-md-6 mb-3">
+                                <label for="annee_publication" class="form-label">Année de publication</label>
+                                <input type="number" class="form-control" id="annee_publication" 
+                                       name="annee_publication" min="1000" max="2024" 
+                                       placeholder="ex: 2023">
+                            </div>
+                            
+                            <!-- Éditeur -->
+                            <div class="col-md-6 mb-3">
+                                <label for="editeur" class="form-label">Éditeur</label>
+                                <input type="text" class="form-control" id="editeur" name="editeur" 
+                                       placeholder="Maison d'édition">
+                            </div>
+                            
+                            <!-- Catégorie -->
+                            <div class="col-md-6 mb-3">
+                                <label for="categorie" class="form-label">Catégorie</label>
+                                <select class="form-select" id="categorie" name="categorie">
+                                    <option value="">Sélectionnez une catégorie</option>
+                                    <option value="Roman">Roman</option>
+                                    <option value="Science-fiction">Science-fiction</option>
+                                    <option value="Fantasy">Fantasy</option>
+                                    <option value="Policier">Policier</option>
+                                    <option value="Historique">Historique</option>
+                                    <option value="Biographie">Biographie</option>
+                                    <option value="Scolaire">Scolaire</option>
+                                    <option value="Technique">Technique</option>
+                                    <option value="Jeunesse">Jeunesse</option>
+                                    <option value="BD/Manga">BD/Manga</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Nombre d'exemplaires -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nb_exemplaires" class="form-label">Nombre d'exemplaires *</label>
+                                <input type="number" class="form-control" id="nb_exemplaires" 
+                                       name="nb_exemplaires" min="1" max="100" value="1" required>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          rows="3" placeholder="Résumé du livre"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('liste_ouvrages') }}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Retour à la liste
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Ajouter l'ouvrage
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Aide -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Champs obligatoires :</strong> Titre et Auteur</p>
+                    <p><strong>ISBN :</strong> Identifiant international unique (facultatif)</p>
+                    <p><strong>Exemplaires :</strong> Le nombre de copies physiques de ce livre</p>
+                    <p class="mb-0"><small>Chaque exemplaire aura un numéro d'inventaire unique généré automatiquement</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

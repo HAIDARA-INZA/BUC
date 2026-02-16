@@ -1,0 +1,20 @@
+Structure du Projet
+
+bibliotheque/
+├── app.py
+├── requirements.txt
+├── database.py
+├── models.py
+├── controllers.py
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── script.js
+└── templates/
+    ├── base.html
+    ├── index.html
+    ├── livres.html
+    ├── emprunts.html
+    ├── usagers.html
+    └── reservations.html

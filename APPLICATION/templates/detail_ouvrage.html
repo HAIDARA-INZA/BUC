@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Détail - {{ ouvrage.titre }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="mb-0">{{ ouvrage.titre }}</h1>
+                            <h5 class="text-muted">{{ ouvrage.auteur }}</h5>
+                        </div>
+                        <a href="{{ url_for('liste_ouvrages') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>ISBN:</strong> {{ ouvrage.isbn or 'N/A' }}</p>
+                            <p><strong>Année de publication:</strong> {{ ouvrage.annee_publication or 'N/A' }}</p>
+                            <p><strong>Éditeur:</strong> {{ ouvrage.editeur or 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Catégorie:</strong> {{ ouvrage.categorie or 'N/A' }}</p>
+                            <p><strong>Total exemplaires:</strong> {{ ouvrage.nombre_exemplaires }}</p>
+                            <p>
+                                <strong>Disponibilité:</strong>
+                                {% if ouvrage.est_disponible() %}
+                                    <span class="badge bg-success">{{ ouvrage.exemplaires_disponibles() }} disponible(s)</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Aucun disponible</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if ouvrage.description %}
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p>{{ ouvrage.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('ajouter_ouvrage') }}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </a>
+                        {% if ouvrage.est_disponible() %}
+                        <a href="{{ url_for('nouvel_emprunt') }}" class="btn btn-success">
+                            <i class="bi bi-book"></i> Emprunter
+                        </a>
+                        {% else %}
+                        <button class="btn btn-success" disabled>
+                            <i class="bi bi-book"></i> Emprunter (indisponible)
+                        </button>
+                        <!-- Afficher bouton Réserver si aucun exemplaire disponible -->
+                        <a href="{{ url_for('reserver_ouvrage', id=ouvrage.id) }}" class="btn btn-outline-warning">
+                            <i class="bi bi-bookmark-plus"></i> Réserver
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-list"></i> Exemplaires</h5>
+                </div>
+                <div class="card-body">
+                    {% if exemplaires %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>N°</th>
+                                    <th>État</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exemplaire in exemplaires %}
+                                <tr>
+                                    <td>{{ exemplaire.numero }}</td>
+                                    <td>
+                                        {% if exemplaire.etat == 'bon' %}
+                                            <span class="badge bg-success">Bon</span>
+                                        {% elif exemplaire.etat == 'abîmé' %}
+                                            <span class="badge bg-warning">Abîmé</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Perdu</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exemplaire.est_disponible() %}
+                                            <span class="badge bg-info">Disponible</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Emprunté</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucun exemplaire</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
