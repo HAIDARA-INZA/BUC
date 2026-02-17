@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Ajouter un Usager{% endblock %}
+{% block title %}Ajouter un usager{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -14,28 +14,34 @@
                     <form method="POST" novalidate>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <label for="prenom" class="form-label">Prenom</label>
                                 <input type="text" class="form-control" id="prenom" name="prenom" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                <label for="nom" class="form-label">Nom</label>
                                 <input type="text" class="form-control" id="nom" name="nom" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="telephone" class="form-label">Téléphone</label>
-                            <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="ex: 0123456789">
+                            <label for="password" class="form-label">Mot de passe initial (optionnel)</label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="6">
+                            <small class="text-muted">Si vide, l usager devra etre cree via l inscription publique pour se connecter.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telephone" class="form-label">Telephone</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone">
                         </div>
 
                         <div class="mb-3">
                             <label for="adresse" class="form-label">Adresse</label>
-                            <textarea class="form-control" id="adresse" name="adresse" rows="3" placeholder="ex: 12 rue de Paris, 75001 Paris"></textarea>
+                            <textarea class="form-control" id="adresse" name="adresse" rows="3"></textarea>
                         </div>
 
                         <div class="d-flex gap-2">

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Demandes Usagers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h1 class="h3 mb-0"><i class="bi bi-inboxes"></i> Gestion des demandes usagers</h1>
+    <form method="GET" class="d-flex gap-2">
+        <select name="statut" class="form-select" onchange="this.form.submit()">
+            <option value="en_attente" {% if statut == 'en_attente' %}selected{% endif %}>En attente</option>
+            <option value="acceptee" {% if statut == 'acceptee' %}selected{% endif %}>Acceptees</option>
+            <option value="refusee" {% if statut == 'refusee' %}selected{% endif %}>Refusees</option>
+            <option value="toutes" {% if statut == 'toutes' %}selected{% endif %}>Toutes</option>
+        </select>
+    </form>
+</div>
+
+<div class="card shadow">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Usager</th>
+                    <th>Ouvrage</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes %}
+                <tr>
+                    <td>{{ demande.id }}</td>
+                    <td>{{ demande.usager.prenom }} {{ demande.usager.nom }}</td>
+                    <td>{{ demande.ouvrage.titre|truncate(40) }}</td>
+                    <td><span class="badge bg-info text-dark">{{ demande.type_demande }}</span></td>
+                    <td>
+                        <span class="badge {% if demande.statut == 'acceptee' %}bg-success{% elif demande.statut == 'refusee' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                            {{ demande.statut }}
+                        </span>
+                    </td>
+                    <td>{{ demande.date_creation.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        {% if demande.statut == 'en_attente' %}
+                        <div class="d-flex gap-1">
+                            <form method="POST" action="{{ url_for('accepter_demande', id=demande.id) }}">
+                                <input type="hidden" name="commentaire_admin" value="Validation admin">
+                                <button class="btn btn-sm btn-success" type="submit">Accepter</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('refuser_demande', id=demande.id) }}">
+                                <input type="hidden" name="commentaire_admin" value="Refus admin">
+                                <button class="btn btn-sm btn-danger" type="submit">Refuser</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <small class="text-muted">Traitee</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-4 text-muted">Aucune demande a afficher.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

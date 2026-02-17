@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription Usager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-7">
+        <div class="card shadow">
+            <div class="card-header text-white text-center bg-primary">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Creer un compte usager</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="prenom">Prenom</label>
+                        <input id="prenom" name="prenom" type="text" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="nom">Nom</label>
+                        <input id="nom" name="nom" type="text" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Email</label>
+                        <input id="email" name="email" type="email" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="telephone">Telephone</label>
+                        <input id="telephone" name="telephone" type="text" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="adresse">Adresse</label>
+                        <input id="adresse" name="adresse" type="text" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="password">Mot de passe (min 6 caracteres)</label>
+                        <input id="password" name="password" type="password" class="form-control" minlength="6" required>
+                    </div>
+                    <div class="col-12 d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Creer mon compte</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

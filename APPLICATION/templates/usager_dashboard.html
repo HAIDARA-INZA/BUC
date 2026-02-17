@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Dashboard{% endblock %}
+
+{% block content %}
+<div data-user-dashboard="true" class="user-dashboard">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h2 mb-1"><i class="bi bi-stars"></i> Bonjour {{ usager.prenom }} {{ usager.nom }}</h1>
+            <p class="text-muted mb-0">Votre espace personnel se met a jour automatiquement.</p>
+        </div>
+        <span class="badge bg-primary p-2">{{ now.strftime('%d/%m/%Y') }}</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3"><div class="card dashboard-card"><div class="card-body"><small>Emprunts en cours</small><h3 id="kpi-emprunts">{{ stats.emprunts_en_cours }}</h3></div></div></div>
+        <div class="col-sm-6 col-lg-3"><div class="card dashboard-card"><div class="card-body"><small>Retards</small><h3 id="kpi-retards">{{ stats.emprunts_en_retard }}</h3></div></div></div>
+        <div class="col-sm-6 col-lg-3"><div class="card dashboard-card"><div class="card-body"><small>Reservations actives</small><h3 id="kpi-reservations">{{ stats.reservations_actives }}</h3></div></div></div>
+        <div class="col-sm-6 col-lg-3"><div class="card dashboard-card"><div class="card-body"><small>Demandes en attente</small><h3 id="kpi-demandes">{{ stats.demandes_en_attente }}</h3></div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white"><strong>Faire une demande</strong></div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('creer_demande_usager') }}" class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Ouvrage</label>
+                            <select class="form-select" name="ouvrage_id" required>
+                                <option value="">Choisir un ouvrage</option>
+                                {% for ouvrage in ouvrages %}
+                                <option value="{{ ouvrage.id }}">{{ ouvrage.titre }} - {{ ouvrage.auteur }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Type de demande</label>
+                            <select class="form-select" name="type_demande" required>
+                                <option value="emprunt">Demande d'emprunt</option>
+                                <option value="reservation">Demande de reservation</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Commentaire (optionnel)</label>
+                            <input type="text" class="form-control" name="commentaire" maxlength="180" placeholder="Ex: besoin pour un projet">
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Envoyer la demande</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <strong>Mes demandes recentes</strong>
+                    <span class="badge bg-light text-dark">Live</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" id="demandes-live-list">
+                        {% for demande in demandes %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>{{ demande.ouvrage.titre|truncate(35) }}</strong>
+                                <span class="badge {% if demande.statut == 'acceptee' %}bg-success{% elif demande.statut == 'refusee' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                    {{ demande.statut }}
+                                </span>
+                            </div>
+                            <small>{{ demande.type_demande }} - {{ demande.date_creation.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        {% else %}
+                        <div class="p-4 text-muted">Aucune demande pour le moment.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-4">
+        <div class="card-header bg-white">
+            <strong>Mes emprunts (en cours et retournes)</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ouvrage</th>
+                            <th>Date emprunt</th>
+                            <th>Retour prevu</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emprunt in emprunts %}
+                        <tr>
+                            <td>{{ emprunt.exemplaire.ouvrage.titre|truncate(45) }}</td>
+                            <td>{{ emprunt.date_emprunt.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {{ emprunt.date_retour_prevue.strftime('%d/%m/%Y') }}
+                                {% if emprunt.date_retour_reelle %}
+                                <br><small class="text-success">Retour effectif: {{ emprunt.date_retour_reelle.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if emprunt.statut in ['retourne', 'retourné'] %}
+                                <span class="badge bg-success">Retourne</span>
+                                {% elif emprunt.est_en_retard() %}
+                                <span class="badge bg-danger">En retard</span>
+                                {% else %}
+                                <span class="badge bg-primary">En cours</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Aucun emprunt enregistre.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

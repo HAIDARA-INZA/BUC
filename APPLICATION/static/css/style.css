@@ -1,49 +1,106 @@
-/* Styles personnalisés pour l'application */
+:root {
+    --brand-public: #2463eb;
+    --brand-user: #0e9f6e;
+    --brand-admin: #b54708;
+    --nav-gradient-public: linear-gradient(120deg, #2463eb, #9333ea);
+    --nav-gradient-user: linear-gradient(120deg, #0e9f6e, #0ea5e9);
+    --nav-gradient-admin: linear-gradient(120deg, #111827, #7c2d12);
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+}
 
 body {
-    background-color: #f8f9fa;
+    background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 45%, #ffffff 100%);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.app-navbar {
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(6px);
+}
+
+.public-theme .app-navbar {
+    background-image: var(--nav-gradient-public);
+}
+
+.user-theme .app-navbar {
+    background-image: var(--nav-gradient-user);
+}
+
+.admin-theme .app-navbar {
+    background-image: var(--nav-gradient-admin);
+}
+
+.hero {
+    background: linear-gradient(130deg, #1d4ed8, #0ea5e9 70%);
+    color: #fff;
+    box-shadow: 0 24px 40px rgba(2, 132, 199, 0.25);
 }
 
 .card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
 }
 
-.table th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
+.dashboard-card {
+    position: relative;
 }
 
-.badge {
-    font-size: 0.8em;
+.dashboard-card::after {
+    content: '';
+    position: absolute;
+    inset: auto -35% -70% auto;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.22), transparent 70%);
+    pointer-events: none;
+}
+
+.user-dashboard .dashboard-card::after {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.22), transparent 70%);
+}
+
+.admin-theme .dashboard-card::after {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.25), transparent 70%);
+}
+
+.app-footer {
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    background: #f8fafc;
+    color: var(--muted);
 }
 
 .alert {
     border: none;
+    border-left: 4px solid currentColor;
 }
 
-.btn {
-    border-radius: 4px;
+.list-group-item {
+    animation: fadeInUp 0.35s ease;
 }
 
-.navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.footer {
-    border-top: 1px solid #dee2e6;
-}
-
-/* Animation pour les nouvelles entrées */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
+@media (max-width: 768px) {
+    .hero {
+        border-radius: 16px;
+    }
 }

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion Usager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-header text-white text-center bg-primary">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> Espace Usager</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email</label>
+                        <input id="email" name="email" type="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Mot de passe</label>
+                        <input id="password" name="password" type="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+
+                <div class="text-end mt-2">
+                    <a href="{{ url_for('usager_forgot_password') }}" class="small text-decoration-none">Mot de passe oublie ?</a>
+                </div>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    Pas encore de compte ?
+                    <a href="{{ url_for('usager_register') }}">Inscription</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
